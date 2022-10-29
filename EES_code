@@ -1,0 +1,45 @@
+# PROGRAMA PARA ESTIMATIVA DE ÁGUA CONDENSADA (EES)
+
+"DADOS DE ENTRADA"
+m_dot_R134a =  [m³/s]  
+T_amb =  [ºC]
+phi = 
+phi_sat = 1
+P_atm = 102 [kPa]
+T_ar_depois_eva = [ºC]
+T_R134a_val = [ºC]
+T_R134a_meio_eva =  [ºC]
+T_R134a_sai_eva =  [ºC]
+T_R134a_meio_con =  [ºC]
+
+"ENTALPIA DO AR ÚMIDO"
+h_antes_eva = Enthalpy(AirH2O;T=T_amb;r=phi;P=P_atm)
+h_depois_eva = Enthalpy(AirH2O;T=T_ar_depois_eva;r=phi;P=P_atm)
+"PRESSÃO DE SATURAÇÃO DO FLUIDO REFRIGERANTE"
+P_sat_eva =P_sat(R134a;T=T_R134a_meio_eva)
+P_sat_con =P_sat(R134a;T=T_R134a_meio_con)
+
+"ENTALPIA DO FLUIDO REFRIGERANTE"
+h_1 = Enthalpy(R134a;T=T_R134a_sai_eva;P=P_sat_eva)
+h_4 = Enthalpy(R134a;T=T_R134a_val;P=P_sat_con)
+
+"DENSIDADE DO FLUIDO REFRIGERANTE"
+rho_R134a = Density(R134a;T=T_R134a_val ;P = P_sat_con)
+
+"TAXA DE TRANSFERÊNCIA DE CALOR DO EVAPORADOR"
+Q_dot = m_dot_R134a*rho_R134a*(h_1 - h_4)
+
+"VAZÃO MÁSSICA DE AR"
+Q_dot = m_dot_ar*(h_antes_eva - h_depois_eva)
+massa_dot_ar = m_dot_ar*3600
+
+"VAZÃO VOLUMÉTRICA DE AR "
+v_ar =Volume(AirH2O;T=T_depois_eva;r=phi;P=P_atm)
+V_dot_ar = massa_dot_ar*v_ar
+
+"UMIDADE ABSOLUTA ANTES DO EVAPORADOR, DEPOIS DO EVAPORADOR"
+omega_antes_eva = HumRat(AirH2O;T=T_amb;r=phi;P=P_atm)
+omega_depois_eva = HumRat(AirH2O;T=T_depois_eva;r=phi_sat;P=P_atm)
+
+"VAZÃO DE ÁGUA"
+m_dot_água = massa_dot_ar*(omega_antes_eva - omega_depois_eva)
