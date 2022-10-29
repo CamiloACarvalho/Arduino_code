@@ -1,0 +1,69 @@
+//PROGRAMA PARA AQUISIÇÃO DE DADOS
+
+#include <OneWire.h>
+#include <DallasTemperature.h>
+#include "DHT.h"
+#define DHTPIN A1 // pino que estamos conectado
+#define DHTTYPE DHT11 // DHT 11
+#define ONE_WIRE_BUS 10 // Porta do pino de sinal do DS18B20
+
+DHT dht(DHTPIN, DHTTYPE);
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+DeviceAddress one_Thermometer = {0x28, 0xFF, 0xAC, 0x17, 0x41, 0x04, 0x00, 0x45};
+DeviceAddress two_Thermometer = {0x28, 0xFF, 0xCE, 0xBF, 0x43, 0x16, 0x04, 0x31};
+DeviceAddress three_Thermometer = {0x28, 0xFF, 0x31, 0x18, 0x43, 0x04, 0x00, 0xCB};
+DeviceAddress four_Thermometer = {0x28, 0xFF, 0xCD, 0x5F, 0x3C, 0x04, 0x00, 0x9A};
+DeviceAddress five_Thermometer = {0x28, 0xFF, 0x73, 0x18, 0x44, 0x04, 0x00, 0xDB};
+DeviceAddress six_Thermometer = {0x28, 0xFF, 0x27, 0xF0, 0x44, 0x16, 0x03, 0x9B};
+int i=0; 
+void setup(void)
+{  Serial.begin(9600);
+   Serial.println("TRABALHO DE CONCLUSAO DE CURSO");
+   dht.begin();
+   sensors.begin();
+   sensors.setResolution(one_Thermometer, 10);
+   sensors.setResolution(two_Thermometer, 10);
+   sensors.setResolution(three_Thermometer, 10);
+   sensors.setResolution(four_Thermometer, 10);
+   sensors.setResolution(five_Thermometer, 10);
+   sensors.setResolution(six_Thermometer, 10); }
+void printTemperature(DeviceAddress deviceAddress)
+{  float tempC = sensors.getTempC(deviceAddress);
+    if (tempC == -127.00) 
+      { Serial.print("Erro ao ler temperatura !"); } 
+   else 
+  {  Serial.print(tempC);  }}
+void loop(void)
+{ delay(20000); 
+   i++;  
+   sensors.requestTemperatures();
+   float h = dht.readHumidity();
+   float t = dht.readTemperature();  
+   Serial.print(" T do r134a antes da val: ");
+   printTemperature(one_Thermometer);
+   delay(5000);
+   Serial.print(" T do ar entrada eva: ");
+   printTemperature(two_Thermometer);
+   delay(5000);
+   Serial.print(" T do R134a no meio do con: ");
+   printTemperature(three_Thermometer);
+   delay(5000);
+  Serial.print(" T do r1134a depois da val: ");
+  printTemperature(four_Thermometer);
+  delay(5000);  
+  Serial.print(" T do R134a saida do eva : ");
+  printTemperature(five_Thermometer);
+  delay(5000);
+  Serial.print(" T do ar na saida do eva: ");
+  printTemperature(six_Thermometer);
+  delay(5000);
+  Serial.print(" Phi: ");
+  Serial.print(h);
+  delay(5000);  
+  Serial.print(" T ambiente: ");
+  Serial.print(t);
+  delay(5000);  
+  Serial.print(" ");
+  Serial.print(i);
+  Serial.print("\n"); }
